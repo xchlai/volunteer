@@ -25,13 +25,16 @@ const loadActivities = async () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   message.hidden = true;
+  const activityIds = Array.from(form.activity.selectedOptions).map((option) =>
+    Number(option.value)
+  );
   const payload = {
     employee_id: form.employeeId.value.trim(),
     name: form.name.value.trim(),
-    activity_id: Number(form.activity.value),
+    activity_ids: activityIds,
   };
 
-  if (!payload.employee_id || !payload.name || !payload.activity_id) {
+  if (!payload.employee_id || !payload.name || activityIds.length === 0) {
     showMessage("请完整填写信息。", true);
     return;
   }
