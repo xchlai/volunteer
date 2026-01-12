@@ -4,4 +4,4 @@ compatibility_date = "2024-06-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "volunteer-db"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+database_id = "ce49805f-9967-4ba2-aaa8-88fd508e6d39"
