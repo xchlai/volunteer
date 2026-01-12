@@ -5,24 +5,36 @@ export async function onRequest({ request, env }) {
 
   if (method === "POST") {
     const body = await parseJson(request);
-    if (!body?.employee_id || !body?.name || !body?.activity_id) {
+    const rawActivityIds = Array.isArray(body?.activity_ids)
+      ? body.activity_ids
+      : body?.activity_id
+        ? [body.activity_id]
+        : [];
+
+    if (!body?.employee_id || !body?.name || rawActivityIds.length === 0) {
       return json({ error: "Missing submission fields" }, { status: 400 });
     }
 
     const employeeId = body.employee_id.trim();
     const name = body.name.trim();
-    const activityId = Number(body.activity_id);
+    const activityIds = [...new Set(rawActivityIds.map((id) => Number(id)))].filter(
+      (id) => Number.isFinite(id)
+    );
 
-    if (!employeeId || !name || !Number.isFinite(activityId)) {
+    if (!employeeId || !name || activityIds.length === 0) {
       return json({ error: "Invalid submission fields" }, { status: 400 });
     }
 
-    await env.DB.prepare(
-      `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
-       VALUES (?, ?, ?, datetime('now'))
-       ON CONFLICT(employee_id, activity_id)
-       DO UPDATE SET name = excluded.name, updated_at = datetime('now')`
-    ).bind(employeeId, name, activityId).run();
+    const statements = activityIds.map((activityId) =>
+      env.DB.prepare(
+        `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
+         VALUES (?, ?, ?, datetime('now'))
+         ON CONFLICT(employee_id, activity_id)
+         DO UPDATE SET name = excluded.name, updated_at = datetime('now')`
+      ).bind(employeeId, name, activityId)
+    );
+
+    await env.DB.batch(statements);
 
     return json({ ok: true });
   }

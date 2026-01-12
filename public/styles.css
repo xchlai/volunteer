@@ -100,6 +100,12 @@ button.danger {
   margin-top: 12px;
 }
 
+.help {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
