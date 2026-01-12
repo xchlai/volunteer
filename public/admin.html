@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>管理员后台 - 志愿者活动</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>管理员后台</h1>
+        <a href="/">返回登记页面</a>
+      </header>
+
+      <section class="card" id="login-card">
+        <h2>管理员登录</h2>
+        <form id="login-form" class="grid">
+          <div>
+            <label for="adminPassword">管理员密码</label>
+            <input id="adminPassword" type="password" required />
+          </div>
+          <button type="submit">进入后台</button>
+        </form>
+        <p class="notice" id="login-message" hidden></p>
+      </section>
+
+      <section class="card" id="dashboard" hidden>
+        <h2>统计概览</h2>
+        <div class="grid two" id="stats"></div>
+        <canvas id="chart" height="120"></canvas>
+      </section>
+
+      <section class="card" id="activity-card" hidden>
+        <h2>志愿者活动设置</h2>
+        <form id="activity-form" class="grid two">
+          <div>
+            <label for="activityName">活动名称</label>
+            <input id="activityName" required />
+          </div>
+          <div>
+            <label for="activityDuration">持续时间（分钟）</label>
+            <input id="activityDuration" type="number" min="1" required />
+          </div>
+          <button type="submit">新增活动</button>
+        </form>
+        <div id="activity-list"></div>
+      </section>
+
+      <section class="card" id="submission-card" hidden>
+        <h2>登记记录</h2>
+        <div class="actions">
+          <button id="refresh">刷新数据</button>
+          <button class="secondary" id="export">导出 CSV</button>
+        </div>
+        <div id="submission-list"></div>
+      </section>
+
+      <section class="card" id="person-card" hidden>
+        <h2>个人累计时长</h2>
+        <div id="person-list"></div>
+      </section>
+    </main>
+    <script src="/admin.js"></script>
+  </body>
+</html>

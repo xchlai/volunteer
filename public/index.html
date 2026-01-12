@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>志愿者活动登记</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>志愿者活动登记</h1>
+        <a href="/admin.html">管理员入口</a>
+      </header>
+
+      <section class="card">
+        <h2>填写参与信息</h2>
+        <form id="signup-form" class="grid">
+          <div>
+            <label for="employeeId">工号</label>
+            <input id="employeeId" name="employeeId" required />
+          </div>
+          <div>
+            <label for="name">姓名</label>
+            <input id="name" name="name" required />
+          </div>
+          <div>
+            <label for="activity">选择志愿者活动（可多选）</label>
+            <select id="activity" name="activity" multiple required></select>
+          </div>
+          <button type="submit">提交登记</button>
+        </form>
+        <p class="notice" id="signup-message" hidden></p>
+      </section>
+
+      <section class="card">
+        <h2>提示</h2>
+        <ul>
+          <li>可一次选择多个活动提交。</li>
+          <li>如再次提交，将覆盖该工号之前的所有登记记录。</li>
+          <li>活动时长以管理员后台设置为准。</li>
+        </ul>
+      </section>
+
+      <footer>适配手机和电脑浏览器。</footer>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
