@@ -51,7 +51,7 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  showMessage("登记成功！如重复提交同一活动，系统会自动覆盖记录。", false);
+  showMessage("登记成功！如重复提交，系统会覆盖该工号之前的所有记录。", false);
   form.reset();
 });
 

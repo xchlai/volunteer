@@ -3,6 +3,7 @@ const dashboard = document.querySelector("#dashboard");
 const activityCard = document.querySelector("#activity-card");
 const submissionCard = document.querySelector("#submission-card");
 const personCard = document.querySelector("#person-card");
+const resetCard = document.querySelector("#reset-card");
 const loginForm = document.querySelector("#login-form");
 const loginMessage = document.querySelector("#login-message");
 const activityForm = document.querySelector("#activity-form");
@@ -13,6 +14,7 @@ const statsContainer = document.querySelector("#stats");
 const refreshButton = document.querySelector("#refresh");
 const exportButton = document.querySelector("#export");
 const chartCanvas = document.querySelector("#chart");
+const resetButton = document.querySelector("#reset-data");
 
 let adminPassword = sessionStorage.getItem("adminPassword") || "";
 let cachedSubmissions = [];
@@ -37,6 +39,7 @@ const showDashboard = () => {
   activityCard.hidden = false;
   submissionCard.hidden = false;
   personCard.hidden = false;
+  resetCard.hidden = false;
 };
 
 const handleAuthFailure = () => {
@@ -47,6 +50,7 @@ const handleAuthFailure = () => {
   activityCard.hidden = true;
   submissionCard.hidden = true;
   personCard.hidden = true;
+  resetCard.hidden = true;
   showLoginMessage("密码失效，请重新登录。", true);
 };
 
@@ -316,10 +320,10 @@ exportButton.addEventListener("click", () => {
     return;
   }
 
-  const rows = ["工号,姓名,志愿者活动,时间(分钟)"];
+  const rows = ["工号,姓名,志愿者活动,时间(分钟),提交时间"];
   cachedSubmissions.forEach((row) => {
     rows.push(
-      `${row.employee_id},${row.name},${row.activity_name},${row.duration_minutes}`
+      `${row.employee_id},${row.name},${row.activity_name},${row.duration_minutes},${row.updated_at}`
     );
   });
 
@@ -332,6 +336,18 @@ exportButton.addEventListener("click", () => {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+});
+
+resetButton.addEventListener("click", async () => {
+  if (!confirm("确认重置数据库？此操作将删除所有活动和登记记录，且不可恢复。")) {
+    return;
+  }
+
+  await fetchJson("/api/reset", {
+    method: "POST",
+    headers: authHeaders(),
+  });
+  await loadDashboard();
 });
 
 if (adminPassword) {
