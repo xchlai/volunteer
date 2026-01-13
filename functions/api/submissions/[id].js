@@ -1,4 +1,4 @@
-import { json, requireAdmin } from "../../_utils";
+import { json, requireAdmin, ensureSchema } from "../../_utils";
 
 export async function onRequest({ request, env, params }) {
   const method = request.method.toUpperCase();
@@ -8,6 +8,8 @@ export async function onRequest({ request, env, params }) {
 
   const auth = await requireAdmin(request, env);
   if (!auth.ok) return auth.response;
+
+  await ensureSchema(env);
 
   const id = Number(params.id);
   if (!Number.isFinite(id)) {

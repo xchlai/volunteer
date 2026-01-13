@@ -27,4 +27,32 @@ const parseJson = async (request) => {
   }
 };
 
-export { json, requireAdmin, parseJson };
+const ensureSchema = async (env) => {
+  await env.DB.batch([
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS activities (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        duration_minutes INTEGER NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )`
+    ),
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS submissions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        employee_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        activity_id INTEGER NOT NULL,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
+      )`
+    ),
+    env.DB.prepare(
+      `CREATE UNIQUE INDEX IF NOT EXISTS submissions_employee_activity_unique
+        ON submissions(employee_id, activity_id)`
+    ),
+  ]);
+};
+
+export { json, requireAdmin, parseJson, ensureSchema };

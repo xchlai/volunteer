@@ -1,9 +1,10 @@
-import { json, requireAdmin, parseJson } from "../../_utils";
+import { json, requireAdmin, parseJson, ensureSchema } from "../../_utils";
 
 export async function onRequest({ request, env }) {
   const method = request.method.toUpperCase();
 
   if (method === "POST") {
+    await ensureSchema(env);
     const body = await parseJson(request);
     const rawActivityIds = Array.isArray(body?.activity_ids)
       ? body.activity_ids
@@ -25,14 +26,25 @@ export async function onRequest({ request, env }) {
       return json({ error: "Invalid submission fields" }, { status: 400 });
     }
 
-    const statements = activityIds.map((activityId) =>
-      env.DB.prepare(
-        `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
-         VALUES (?, ?, ?, datetime('now'))
-         ON CONFLICT(employee_id, activity_id)
-         DO UPDATE SET name = excluded.name, updated_at = datetime('now')`
-      ).bind(employeeId, name, activityId)
-    );
+    const existing = await env.DB.prepare(
+      "SELECT COUNT(*) AS total FROM submissions WHERE employee_id = ?"
+    ).bind(employeeId).first();
+
+    const statements = [];
+    if (existing?.total) {
+      statements.push(
+        env.DB.prepare("DELETE FROM submissions WHERE employee_id = ?").bind(employeeId)
+      );
+    }
+
+    activityIds.forEach((activityId) => {
+      statements.push(
+        env.DB.prepare(
+          `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
+           VALUES (?, ?, ?, datetime('now'))`
+        ).bind(employeeId, name, activityId)
+      );
+    });
 
     await env.DB.batch(statements);
 
@@ -40,6 +52,7 @@ export async function onRequest({ request, env }) {
   }
 
   if (method === "GET") {
+    await ensureSchema(env);
     const auth = await requireAdmin(request, env);
     if (!auth.ok) return auth.response;
 

@@ -12,6 +12,7 @@ const personList = document.querySelector("#person-list");
 const statsContainer = document.querySelector("#stats");
 const refreshButton = document.querySelector("#refresh");
 const exportButton = document.querySelector("#export");
+const resetButton = document.querySelector("#reset-data");
 const chartCanvas = document.querySelector("#chart");
 
 let adminPassword = sessionStorage.getItem("adminPassword") || "";
@@ -332,6 +333,18 @@ exportButton.addEventListener("click", () => {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+});
+
+resetButton.addEventListener("click", async () => {
+  const confirmed = confirm(
+    "确认要初始化数据吗？此操作会删除所有活动设置和用户登记记录，无法恢复。"
+  );
+  if (!confirmed) return;
+  await fetchJson("/api/reset", {
+    method: "POST",
+    headers: authHeaders(),
+  });
+  await loadDashboard();
 });
 
 if (adminPassword) {
