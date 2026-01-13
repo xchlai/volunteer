@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>志愿者活动登记</title>
+    <title>英特尔志愿者爱心工程 活动登记</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main>
       <header>
-        <h1>志愿者活动登记</h1>
+        <h1>英特尔志愿者爱心工程 活动登记</h1>
         <a href="/admin.html">管理员入口</a>
       </header>
 
       <section class="card">
-        <h2>填写参与信息</h2>
+        <h2>请填写您完整参与的活动项目</h2>
         <form id="signup-form" class="grid">
           <div>
             <label for="employeeId">工号</label>
@@ -25,7 +25,10 @@
             <input id="name" name="name" required />
           </div>
           <div>
-            <label for="activity">选择志愿者活动</label>
+            <label for="activity">
+              选择志愿者活动
+              <span class="label-sub">志愿者时间为预估，将根据实际用时修正</span>
+            </label>
             <select id="activity" name="activity" multiple required></select>
             <p class="help">可按住 Ctrl/Command 选择多个活动。</p>
           </div>
@@ -37,8 +40,8 @@
       <section class="card">
         <h2>提示</h2>
         <ul>
-          <li>如已登记过同一活动，再次提交会覆盖旧记录。</li>
-          <li>活动时长以管理员后台设置为准。</li>
+          <li>不重复记录：如已登记过同一活动，再次提交会覆盖旧记录。</li>
+          <li>多录/误录/无法录等特殊情况请务必联系管理员：Niu, Dong</li>
         </ul>
       </section>
 

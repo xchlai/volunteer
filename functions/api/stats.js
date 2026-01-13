@@ -1,8 +1,10 @@
-import { json, requireAdmin } from "../_utils";
+import { json, requireAdmin, ensureSchema } from "../_utils";
 
 export async function onRequest({ request, env }) {
   const auth = await requireAdmin(request, env);
   if (!auth.ok) return auth.response;
+
+  await ensureSchema(env);
 
   const [{ total_volunteers = 0, total_participations = 0, total_minutes = 0 } = {}] =
     (await env.DB.prepare(

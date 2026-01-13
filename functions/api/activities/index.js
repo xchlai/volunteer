@@ -1,9 +1,10 @@
-import { json, requireAdmin, parseJson } from "../../_utils";
+import { json, requireAdmin, parseJson, ensureSchema } from "../../_utils";
 
 export async function onRequest({ request, env }) {
   const method = request.method.toUpperCase();
 
   if (method === "GET") {
+    await ensureSchema(env);
     const { results } = await env.DB.prepare(
       "SELECT id, name, duration_minutes FROM activities ORDER BY id DESC"
     ).all();
@@ -11,6 +12,7 @@ export async function onRequest({ request, env }) {
   }
 
   if (method === "POST") {
+    await ensureSchema(env);
     const auth = await requireAdmin(request, env);
     if (!auth.ok) return auth.response;
 

@@ -1,4 +1,4 @@
-import { json, requireAdmin, parseJson } from "../../_utils";
+import { json, requireAdmin, parseJson, ensureSchema } from "../../_utils";
 
 export async function onRequest({ request, env, params }) {
   const method = request.method.toUpperCase();
@@ -9,6 +9,7 @@ export async function onRequest({ request, env, params }) {
   }
 
   if (method === "PUT") {
+    await ensureSchema(env);
     const auth = await requireAdmin(request, env);
     if (!auth.ok) return auth.response;
 
@@ -25,6 +26,7 @@ export async function onRequest({ request, env, params }) {
   }
 
   if (method === "DELETE") {
+    await ensureSchema(env);
     const auth = await requireAdmin(request, env);
     if (!auth.ok) return auth.response;
 
