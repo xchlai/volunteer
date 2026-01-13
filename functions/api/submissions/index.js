@@ -25,14 +25,27 @@ export async function onRequest({ request, env }) {
       return json({ error: "Invalid submission fields" }, { status: 400 });
     }
 
-    const statements = activityIds.map((activityId) =>
-      env.DB.prepare(
-        `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
-         VALUES (?, ?, ?, datetime('now'))
-         ON CONFLICT(employee_id, activity_id)
-         DO UPDATE SET name = excluded.name, updated_at = datetime('now')`
-      ).bind(employeeId, name, activityId)
-    );
+    const existing = await env.DB.prepare(
+      "SELECT 1 FROM submissions WHERE employee_id = ? LIMIT 1"
+    )
+      .bind(employeeId)
+      .first();
+
+    const statements = [];
+    if (existing) {
+      statements.push(
+        env.DB.prepare("DELETE FROM submissions WHERE employee_id = ?").bind(employeeId)
+      );
+    }
+
+    activityIds.forEach((activityId) => {
+      statements.push(
+        env.DB.prepare(
+          `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
+           VALUES (?, ?, ?, datetime('now'))`
+        ).bind(employeeId, name, activityId)
+      );
+    });
 
     await env.DB.batch(statements);
 
