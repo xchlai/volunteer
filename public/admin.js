@@ -317,10 +317,27 @@ exportButton.addEventListener("click", () => {
     return;
   }
 
-  const rows = ["工号,姓名,志愿者活动,时间(分钟)"];
+  const escapeCsvValue = (value) => {
+    if (value === null || value === undefined) return "";
+    const stringValue = String(value);
+    if (/[",\n\r]/.test(stringValue)) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    return stringValue;
+  };
+
+  const rows = ["工号,姓名,志愿者活动,时间(分钟),更新时间"];
   cachedSubmissions.forEach((row) => {
     rows.push(
-      `${row.employee_id},${row.name},${row.activity_name},${row.duration_minutes}`
+      [
+        row.employee_id,
+        row.name,
+        row.activity_name,
+        row.duration_minutes,
+        row.updated_at,
+      ]
+        .map(escapeCsvValue)
+        .join(",")
     );
   });
 
