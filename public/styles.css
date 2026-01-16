@@ -96,6 +96,27 @@ button.danger {
   gap: 16px;
 }
 
+.option-group {
+  display: grid;
+  gap: 8px;
+}
+
+.option-label {
+  font-weight: 600;
+}
+
+.option-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.option-item input {
+  width: auto;
+}
+
 .grid.two {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
@@ -153,6 +174,11 @@ footer {
   margin-top: 32px;
   font-size: 0.9rem;
   color: #64748b;
+}
+
+.version {
+  font-size: 0.75rem;
+  color: #94a3b8;
 }
 
 @media (max-width: 600px) {

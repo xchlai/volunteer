@@ -26,25 +26,46 @@ export async function onRequest({ request, env }) {
       return json({ error: "Invalid submission fields" }, { status: 400 });
     }
 
-    const existing = await env.DB.prepare(
-      "SELECT COUNT(*) AS total FROM submissions WHERE employee_id = ?"
-    ).bind(employeeId).first();
-
+    const submissionMode = body?.submission_mode === "append" ? "append" : "reset";
     const statements = [];
-    if (existing?.total) {
-      statements.push(
-        env.DB.prepare("DELETE FROM submissions WHERE employee_id = ?").bind(employeeId)
-      );
-    }
 
-    activityIds.forEach((activityId) => {
+    if (submissionMode === "reset") {
+      const existing = await env.DB.prepare(
+        "SELECT COUNT(*) AS total FROM submissions WHERE employee_id = ?"
+      ).bind(employeeId).first();
+
+      if (existing?.total) {
+        statements.push(
+          env.DB.prepare("DELETE FROM submissions WHERE employee_id = ?").bind(employeeId)
+        );
+      }
+
+      activityIds.forEach((activityId) => {
+        statements.push(
+          env.DB.prepare(
+            `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
+             VALUES (?, ?, ?, datetime('now'))`
+          ).bind(employeeId, name, activityId)
+        );
+      });
+    } else {
       statements.push(
         env.DB.prepare(
-          `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
-           VALUES (?, ?, ?, datetime('now'))`
-        ).bind(employeeId, name, activityId)
+          "UPDATE submissions SET name = ?, updated_at = datetime('now') WHERE employee_id = ?"
+        ).bind(name, employeeId)
       );
-    });
+      activityIds.forEach((activityId) => {
+        statements.push(
+          env.DB.prepare(
+            `INSERT INTO submissions (employee_id, name, activity_id, updated_at)
+             VALUES (?, ?, ?, datetime('now'))
+             ON CONFLICT(employee_id, activity_id) DO UPDATE SET
+               name = excluded.name,
+               updated_at = excluded.updated_at`
+          ).bind(employeeId, name, activityId)
+        );
+      });
+    }
 
     await env.DB.batch(statements);
 

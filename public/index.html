@@ -24,6 +24,17 @@
             <label for="name">姓名</label>
             <input id="name" name="name" required />
           </div>
+          <div class="option-group">
+            <span class="option-label">提交方式</span>
+            <label class="option-item">
+              <input type="radio" name="submissionMode" value="append" required />
+              添加新活动
+            </label>
+            <label class="option-item">
+              <input type="radio" name="submissionMode" value="reset" />
+              之前提交错了，重新选（会删除已提交数据，请勾选全部活动）
+            </label>
+          </div>
           <div>
             <label for="activity">
               选择志愿者活动
@@ -45,7 +56,9 @@
         </ul>
       </section>
 
-      <footer></footer>
+      <footer>
+        <span class="version">v0.1</span>
+      </footer>
     </main>
     <script src="/app.js"></script>
   </body>
