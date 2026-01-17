@@ -28,13 +28,22 @@ form.addEventListener("submit", async (event) => {
   const activityIds = Array.from(form.activity.selectedOptions).map((option) =>
     Number(option.value)
   );
+  const submissionMode = form.querySelector(
+    "input[name='submissionMode']:checked"
+  )?.value;
   const payload = {
     employee_id: form.employeeId.value.trim(),
     name: form.name.value.trim(),
     activity_ids: activityIds,
+    submission_mode: submissionMode,
   };
 
-  if (!payload.employee_id || !payload.name || activityIds.length === 0) {
+  if (
+    !payload.employee_id ||
+    !payload.name ||
+    activityIds.length === 0 ||
+    !submissionMode
+  ) {
     showMessage("请完整填写信息。", true);
     return;
   }
@@ -51,7 +60,11 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  showMessage("登记成功！如重复提交同一活动，系统会自动覆盖记录。", false);
+  const successMessage =
+    submissionMode === "append"
+      ? "登记成功！已保留此前活动并更新当前选择。"
+      : "登记成功！如重复提交，系统会自动覆盖此前记录。";
+  showMessage(successMessage, false);
   form.reset();
 });
 
